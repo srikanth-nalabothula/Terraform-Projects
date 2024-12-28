@@ -1,0 +1,21 @@
+# Local Terraform state
+*.tfstate
+*.tfstate.*
+
+# Ignore the `.terraform` directory where Terraform modules and plugins are stored
+.terraform/
+.terraform.lock.hcl
+
+# Terraform plan output files
+*.tfplan
+
+# Terraform variable definitions that may contain sensitive information
+*.tfvars
+*.tfvars.json
+
+# Private keys (if any are generated as part of your infrastructure setup)
+*.pem
+*.key
+
+# Sensitive backup files
+*.backup

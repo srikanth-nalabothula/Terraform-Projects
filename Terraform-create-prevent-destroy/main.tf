@@ -97,6 +97,7 @@ resource "aws_instance" "web-1" {
     Enterprise = "ABCD"
   }
   lifecycle {
-    create_before_destroy = true
+    #create_before_destroy = true
+    #prevent_destroy = true
   }
 }

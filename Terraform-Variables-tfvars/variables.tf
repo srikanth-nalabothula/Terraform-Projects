@@ -1,1 +1,12 @@
-
+variable "region_name" {}
+variable "vpc-cidr_block" {}
+variable "vpc_tag" {}
+variable "igw_tag" {}
+variable "subnet-cidr_block" {}
+variable "subnet_az" {}
+variable "subnet_tag" {}
+variable "rt-cidr_block" {}
+variable "rt_public_tag" {}
+variable "sg_tag" {}
+variable "ec2_az" {}
+variable "ec2_type" {}

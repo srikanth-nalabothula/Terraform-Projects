@@ -1,14 +1,16 @@
 # Configure the AWS Provider
 provider "aws" {
-  region = "us-east-1"
+  region = var.region_name
 }
 
 resource "aws_vpc" "Vpc-Terra" {
-  cidr_block           = "10.0.0.0/16"
+  cidr_block           = var.vpc-cidr_block
+  enable_dns_support   = "true"
   enable_dns_hostnames = "true"
 
   tags = {
-    Name = "Vpc-Terra"
+    Name    = var.vpc_tag
+    Service = "Terraform"
   }
 }
 
@@ -16,16 +18,20 @@ resource "aws_internet_gateway" "Igw-Terra" {
   vpc_id = aws_vpc.Vpc-Terra.id
 
   tags = {
-    Name = "Igw-Terra"
+    Name    = var.igw_tag
+    Service = "Terraform"
   }
 }
 
 resource "aws_subnet" "Public-Subnet-Terra" {
-  vpc_id     = aws_vpc.Vpc-Terra.id
-  cidr_block = "10.0.1.0/24"
+  vpc_id                  = aws_vpc.Vpc-Terra.id
+  cidr_block              = var.subnet-cidr_block
+  map_public_ip_on_launch = true
+  availability_zone       = var.subnet_az
 
   tags = {
-    Name = "Public-Subnet-Terra"
+    Name    = var.subnet_tag
+    Service = "Terraform"
   }
 }
 
@@ -33,12 +39,13 @@ resource "aws_route_table" "Public-RT-Terra" {
   vpc_id = aws_vpc.Vpc-Terra.id
 
   route {
-    cidr_block = "0.0.0.0/0"
+    cidr_block = var.rt-cidr_block
     gateway_id = aws_internet_gateway.Igw-Terra.id
   }
 
   tags = {
-    Name = "Public-RT-Terra"
+    Name    = var.rt_public_tag
+    Service = "Terraform"
   }
 }
 
@@ -52,7 +59,8 @@ resource "aws_security_group" "allow-all" {
   description = "Allow TLS inbound traffic and all outbound traffic"
   vpc_id      = aws_vpc.Vpc-Terra.id
   tags = {
-    Name = "allow-all"
+    Name    = var.sg_tag
+    Service = "Terraform"
   }
 }
 
@@ -72,4 +80,20 @@ resource "aws_vpc_security_group_egress_rule" "Outbound-Terra" {
   from_port   = 0
   ip_protocol = "tcp"
   to_port     = 0
+}
+
+resource "aws_instance" "web-1" {
+  ami               = "ami-0e2c8caa4b6378d8c"
+  availability_zone = var.ec2_az
+  instance_type     = var.ec2_type
+  # key_name = "LaptopKey"
+  subnet_id                   = aws_subnet.Public-Subnet-Terra.id
+  vpc_security_group_ids      = ["${aws_security_group.allow-all.id}"]
+  associate_public_ip_address = true
+  tags = {
+    Name       = "Server-1"
+    Env        = "Prod"
+    Owner      = "sri"
+    Enterprise = "ABCD"
+  }
 }
